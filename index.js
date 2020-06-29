@@ -15,7 +15,6 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/api/get_preference", async (req, res) => {
-  // console.log(req.body);
   var obj = req.body;
   // console.log(obj);
 
@@ -41,18 +40,16 @@ app.post("/api/get_preference", async (req, res) => {
     mercadopago.preferences
       .create(preference)
       .then((data) => {
-        // Do Stuff...
-        // console.log(data.body);
-        res.send(data.body.id);
+        // console.log(data);
+        let r = { status: 200, id: data.body.id };
+        res.json(r);
       })
       .catch((error) => {
-        // Do Stuff...
-        console.log(error);
-        res.json({ error });
+        let r = { status: 500 };
+        res.json({ r });
       });
   } catch (err) {
-    // console.log(err);
-    res.json({ msg: "error" });
+    let r = { status: 500 };
     res.status(500).end();
   }
 });
