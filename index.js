@@ -1,30 +1,47 @@
-const app = require("express")();
-var mercadopago = require("mercadopago");
+const app = require('express')();
+var mercadopago = require('mercadopago');
 var port = process.env.PORT || 9000;
 
 mercadopago.configure({
   access_token:
-    "TEST-1456055079143308-051916-8ad472fa5fd87ef418bdc7c48d9614f0-233894286",
+    'TEST-1456055079143308-051916-8ad472fa5fd87ef418bdc7c48d9614f0-233894286',
 });
 
 // app.use(require("body-parser").text());
-app.use(require("body-parser").json());
+app.use(require('body-parser').json());
 
-app.get("/", async (req, res) => {
-  res.send("welcome");
+app.get('/', async (req, res) => {
+  res.send('welcome');
 });
 
-app.post("/api/get_preference", async (req, res) => {
+app.post('/api/get_preference', async (req, res) => {
   var obj = req.body;
   // console.log(obj);
 
   try {
     var preference = {};
+    var mercadopago = require('mercadopago');
+    mercadopago.configurations.setAccessToken('ENV_ACCESS_TOKEN');
+
+    var payment_data = {
+      token: token.card,
+      payment_method_id: method.id,
+    };
+
+    mercadopago.payment
+      .save(payment_data)
+      .then(function (data) {
+        console.log(data);
+        res.send(data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
     var item = {
       title: obj.title,
       quantity: 1,
-      currency_id: "BRL",
+      currency_id: 'BRL',
       unit_price: obj.service_value,
     };
 
@@ -35,6 +52,7 @@ app.post("/api/get_preference", async (req, res) => {
     };
 
     preference.items = [item];
+    preference.payment_data;
     preference.payer = payer;
 
     mercadopago.preferences
@@ -54,4 +72,4 @@ app.post("/api/get_preference", async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log("Listening " + port));
+app.listen(port, () => console.log('Listening ' + port));
