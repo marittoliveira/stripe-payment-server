@@ -20,23 +20,16 @@ app.post('/api/get_preference', async (req, res) => {
 
   try {
     var preference = {};
+
     var mercadopago = require('mercadopago');
-    mercadopago.configurations.setAccessToken('ENV_ACCESS_TOKEN');
+    mercadopago.configurations.setAccessToken(
+      'TEST-1456055079143308-051916-8ad472fa5fd87ef418bdc7c48d9614f0-233894286',
+    );
 
     var payment_data = {
-      token: token.card,
+      token: response.id,
       payment_method_id: method.id,
     };
-
-    mercadopago.payment
-      .save(payment_data)
-      .then(function (data) {
-        console.log(data);
-        res.send(data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
 
     var item = {
       title: obj.title,
@@ -51,9 +44,55 @@ app.post('/api/get_preference', async (req, res) => {
       date_created: new Date().toISOString(),
     };
 
+    var payments = {
+      payment_method_id: obj.method,
+      payment_type_id: obj.card,
+      token: response.id,
+      transaction_amount: obj.service_value,
+      installments: obj.plots,
+      processing_mode: 'aggregator',
+    };
+
+    var disbursements = {
+      //Values ​​rates
+      amount: obj.service_rate,
+      external_reference: obj.market,
+      collector_id: id.place,
+      application_fee: 20,
+      money_release_days: 30,
+      //seller values
+      amount: obj.service_withfee,
+      external_reference: obj.seller,
+      collector_id: id.seller,
+      application_fee: 80,
+      money_release_days: 30,
+    };
+
+    var external_reference = {
+      id: obj.ref_transaction,
+    };
+
+    var payer = {
+      email: obj.email,
+      name: obj.name,
+      date_created: new Date().toISOString(),
+    };
+
     preference.items = [item];
-    preference.payment_data;
     preference.payer = payer;
+    preference.payments = payments;
+    preference.disbursements = disbursements;
+    preference.external_reference = external_reference;
+
+    mercadopago.payment
+      .save(payment_data)
+      .then(function (data) {
+        console.log(data);
+        res.send(data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
     mercadopago.preferences
       .create(preference)

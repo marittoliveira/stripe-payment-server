@@ -1,0 +1,47 @@
+Test documentation for the payment split 
+
+1.Remember You must have the Marketplace configured in the main user account.
+
+2.After having the account configured the file in src >components>pay.js will generate the card token to charge.
+
+3.All sellers must authorize through the link:https://auth.mercadopago.com.br/authorization?client_id=&response_type=code&platform_id=mp&redirect_uri=https://www.mercadopago.com/mp.php
+
+4.the file that will charge the user card and the payment server index.js
+
+
+Testing credentials
+
+ID:7350982115502845
+nickname: TEST1ZAIVZ2J
+password: qatest1216
+Access_Token:APP_USR-446102490962130-081000-969a20e0fee02b37847b2656d7d0e915-623428411
+Public Key:APP_USR-cfcbfb9c-0380-45ce-8280-9f394a4ceb9e
+Client ID: 446102490962130
+Client Secret : mXEPEKd8fUoTIjuCeQOzTqQklm3Dcx5V
+
+users 1 market test account
+{
+    "id": 623428411,
+    "nickname": "TEST1ZAIVZ2J",
+    "password": "qatest1216",
+    "site_status": "active",
+    "email": "test_user_63882857@testuser.com"
+}
+
+Users 2 seller test account
+
+{
+    "id": 623428616,
+    "nickname": "TETE9448574",
+    "password": "qatest8560",
+    "site_status": "active",
+    "email": "test_user_71446266@testuser.com"
+}
+
+test card
+
+holder: APRO APRO
+Number : 5031 7557 3453 0604
+security code : 123
+Due date : 11/25
+
