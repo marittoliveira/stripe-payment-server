@@ -66,51 +66,37 @@ app.post("/api/get_preference", async (req, res) => {
   }
 });
 
-app.post("/api/make_payment", async (req, res) => {
-  var obj = req.body;
-  console.log(obj);
 
-  // var mercadopago = require('mercadopago');
-  // mercadopago.configurations.setAccessToken("ENV_ACCESS_TOKEN");
+app.post("/api/process_payment", (req, res) => {
+  console.log(JSON.stringify(req.body))
+  var payment_data = {
+    transaction_amount: Number(req.body.transactionAmount),
+    token: req.body.token,
+    description: req.body.description,
+    installments: Number(req.body.installments),
+    payment_method_id: req.body.paymentMethodId,
+    // issuer_id: req.body.issuer,
+    payer: {
+      email: req.body.email,
+      identification: {
+        type: req.body.docType,
+        number: req.body.docNumber
+      }
+    }
+  };
 
-  try {
-    var payment_data = {
-      transaction_amount: obj.amount,
-      token: obj.access_token,
-      description: obj.description,
-      installments: obj.installments,
-      payment_method_id: obj.payment_method_id,
-      payer: {
-        email: obj.email,
-      },
-    };
-
-    mercadopago.payment
-      .save(payment_data)
-      .then(function (data) {
-        console.log("Resposne received");
-        res.status(200);
-        res.send(data);
-      })
-      .catch(function (error) {
-        // let r = { status: 500 };
-        // res.status(500);
-        // res.send({
-        //   data: error
-        // });
-        let r = { status: 200 };
-        res.status(200);
-        res.send({
-          data: error,
-        });
+  mercadopago.payment.save(payment_data)
+    .then(function(response) {
+      console.log("Error Response : " +JSON.stringify(response))
+      res.status(response.status).json({
+        status: response.body.status,
+        status_detail: response.body.status_detail,
+        id: response.body.id
       });
-  } catch (err) {
-    let r = { status: 500 };
-    res.status(500);
-    res.send({
-      data: err,
+    })
+    .catch(function(error) {
+      res.status(500).send(error);
     });
-  }
 });
 
 app.listen(port, () => console.log("Listening " + port));
