@@ -179,6 +179,7 @@ app.post("/api/make_payment", async (req, res) => {
       .save(payment_data)
       .then(function (data) {
         console.log("Resposne received");
+        console.log(data);
         res.status(200);
         res.send(data);
       })
@@ -188,6 +189,7 @@ app.post("/api/make_payment", async (req, res) => {
         // res.send({
         //   data: error
         // });
+        console.log(error);
         let r = { status: 200 };
         res.status(200);
         res.send({
