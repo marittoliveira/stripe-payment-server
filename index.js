@@ -94,16 +94,9 @@ var port = process.env.PORT || 9000;
 
 mercadopago.configure({
   access_token:
-    "TEST-5642876213767884-061008-27aa57358417722c30553630ff3fe76e-6430927",
+    "TEST-1456055079143308-051916-8ad472fa5fd87ef418bdc7c48d9614f0-233894286",
 });
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+
 // app.use(require("body-parser").text());
 app.use(require("body-parser").json());
 
@@ -153,55 +146,6 @@ app.post("/api/get_preference", async (req, res) => {
   } catch (err) {
     let r = { status: 500 };
     res.status(500).end();
-  }
-});
-
-app.post("/api/make_payment", async (req, res) => {
-  var obj = req.body;
-  console.log(obj);
-
-  // var mercadopago = require('mercadopago');
-  // mercadopago.configurations.setAccessToken("ENV_ACCESS_TOKEN");
-
-  try {
-    var payment_data = {
-      transaction_amount: obj.amount,
-      token: obj.access_token,
-      description: obj.description,
-      installments: obj.installments,
-      payment_method_id: obj.payment_method_id,
-      payer: {
-        email: obj.email,
-      },
-    };
-
-    mercadopago.payment
-      .save(payment_data)
-      .then(function (data) {
-        console.log("Resposne received");
-        console.log(data);
-        res.status(200);
-        res.send(data);
-      })
-      .catch(function (error) {
-        // let r = { status: 500 };
-        // res.status(500);
-        // res.send({
-        //   data: error
-        // });
-        console.log(error);
-        let r = { status: 200 };
-        res.status(200);
-        res.send({
-          data: error,
-        });
-      });
-  } catch (err) {
-    let r = { status: 500 };
-    res.status(500);
-    res.send({
-      data: err,
-    });
   }
 });
 
