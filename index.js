@@ -106,7 +106,7 @@ app.get("/", async (req, res) => {
 
 app.post("/api/get_preference", async (req, res) => {
   var obj = req.body;
-  // console.log(obj);
+  console.log(obj);
 
   try {
     var preference = {};
