@@ -94,7 +94,7 @@ var port = process.env.PORT || 9000;
 
 mercadopago.configure({
   access_token:
-    "TEST-1456055079143308-051916-8ad472fa5fd87ef418bdc7c48d9614f0-233894286",
+    "TEST-1456055079143308-082916-93e5ea074bc0bfd91d14ca3ad17848c5-233894286",
 });
 
 // app.use(require("body-parser").text());
@@ -130,12 +130,13 @@ app.post("/api/get_preference", async (req, res) => {
     mercadopago.preferences
       .create(preference)
       .then((data) => {
-        // console.log(data);
+        console.log(data);
         let r = { status: 200, id: data.body.id };
         res.json(r);
       })
       .catch((error) => {
         let r = { status: 500 };
+        console.log(error);
         res.json({ r });
       });
   } catch (err) {
