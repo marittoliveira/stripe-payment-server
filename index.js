@@ -69,7 +69,7 @@ var port = process.env.PORT || 9000;
 
 mercadopago.configure({
   access_token:
-    "TEST-5642876213767884-061008-27aa57358417722c30553630ff3fe76e-6430927",
+    "TEST-1456055079143308-082916-93e5ea074bc0bfd91d14ca3ad17848c5-233894286",
 });
 // app.use(function (req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*");
