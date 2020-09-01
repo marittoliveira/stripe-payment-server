@@ -71,14 +71,14 @@ mercadopago.configure({
   access_token:
     "TEST-1456055079143308-082916-93e5ea074bc0bfd91d14ca3ad17848c5-233894286",
 });
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.use(require("body-parser").json());
 
 app.get("/", async (req, res) => {
