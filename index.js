@@ -105,13 +105,8 @@ app.post("/api/get_preference", async (req, res) => {
       date_created: new Date().toISOString(),
     };
 
-    var payment_methods = {
-      excluded_payment_types: [{ id: "ticket" }, { id: "atm" }],
-    };
-
     preference.items = [item];
     preference.payer = payer;
-    preference.payment_methods = payment_methods;
 
     mercadopago.preferences
       .create(preference)
@@ -149,7 +144,6 @@ app.post("/api/process_payment", (req, res) => {
   mercadopago.payment
     .save(payment_data)
     .then(function (response) {
-      console.log(response);
       res.status(response.status).json({
         status: response.body.status,
         status_detail: response.body.status_detail,
