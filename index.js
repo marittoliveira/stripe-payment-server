@@ -71,13 +71,10 @@ app.post("/api/process_payment", (req, res) => {
     payment_method_id: req.body.paymentMethodId,
     issuer_id: undefined,
     payer: {
-      email: req.body.email,
-      identification: {
-        type: req.body.docType,
-        number: req.body.docNumber
-      }
+      email: req.body.email
     }
   };
+  try{
   mercadopago.payment.save(payment_data).then(function(response) {
       res.status(response.status).json({
         status: response.body.status,
@@ -87,6 +84,10 @@ app.post("/api/process_payment", (req, res) => {
     }).catch((error) => {
       console.log("error Found : ",error)
     });
+  }catch(err){
+    console.log(err)
+    res.status(400).json(err)
+  }
 });
 
 app.listen(port, () => console.log("Listening " + port));
