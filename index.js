@@ -26,7 +26,11 @@ app.post("/api/get_preference", async (req, res) => {
   // console.log(obj);
 
   try {
-    var preference = {};
+    var preference = {
+      payment_methods: {
+        excluded_payment_methods: [{ id: "visa" }, { id: "master" }],
+      },
+    };
 
     var item = {
       title: obj.title,
@@ -77,6 +81,7 @@ app.post("/api/process_payment", (req, res) => {
     mercadopago.payment
       .save(payment_data)
       .then(function (response) {
+        // console.log(response);
         res.status(response.status).json({
           status: response.body.status,
           status_detail: response.body.status_detail,
