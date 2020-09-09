@@ -81,7 +81,6 @@ app.post("/api/process_payment", (req, res) => {
     mercadopago.payment
       .save(payment_data)
       .then(function (response) {
-        // console.log(response);
         res.status(response.status).json({
           status: response.body.status,
           status_detail: response.body.status_detail,
