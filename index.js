@@ -26,11 +26,7 @@ app.post("/api/get_preference", async (req, res) => {
   // console.log(obj);
 
   try {
-    var preference = {
-      payment_methods: {
-        excluded_payment_methods: [{ id: "visa" }, { id: "master" }],
-      },
-    };
+    var preference = {};
 
     var item = {
       title: obj.title,
@@ -45,8 +41,13 @@ app.post("/api/get_preference", async (req, res) => {
       date_created: new Date().toISOString(),
     };
 
+    var payment_methods = {
+      excluded_payment_types: [{ id: "ticket" }, { id: "atm" }],
+    };
+
     preference.items = [item];
     preference.payer = payer;
+    preference.payment_methods = payment_methods;
 
     mercadopago.preferences
       .create(preference)
