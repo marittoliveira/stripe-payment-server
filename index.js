@@ -1,5 +1,8 @@
 const app = require("express")();
 var mercadopago = require("mercadopago");
+const stripe = require("stripe")(
+  "sk_test_51HWJxcDi4j44abnrvCXr1VJTKodVD4QHUKryifHNBuogXE9kP6LV30fV6ECh9dTzULh4gtkJspfVki4y74vUIgdE00QwC7nfcg"
+);
 
 var port = process.env.PORT || 9000;
 
@@ -19,6 +22,18 @@ app.use(require("body-parser").json());
 
 app.get("/", async (req, res) => {
   res.send("welcome");
+});
+
+app.post("/api/stripe_intent", async (req, res) => {
+  // console.log(typeof req.body.amount);
+  const intent = await stripe.paymentIntents.create({
+    amount: req.body.amount,
+    currency: "brl",
+    payment_method_types: ["card"],
+    payment_method: req.body.payment_method,
+  });
+  // console.log(intent.client_secret);
+  res.send(intent.client_secret);
 });
 
 app.post("/api/get_preference", async (req, res) => {
