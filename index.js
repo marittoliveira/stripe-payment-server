@@ -33,6 +33,17 @@ app.post("/api/stripe/createAccount", async (req, res) => {
   res.send(account.id);
 });
 
+app.post("/api/stripe/deleteAccount", async (req, res) => {
+  console.log(req.body.account_id);
+  const deleted = await stripe.accounts
+    .del(req.body.account_id)
+    .catch((err) => {
+      console.log(err);
+    });
+  console.log(deleted);
+  res.send("success");
+});
+
 app.post("/api/stripe/retrieveAccount", async (req, res) => {
   // console.log(req.body.account_id);
   if (req.body.account_id) {
@@ -63,21 +74,25 @@ app.post("/api/stripe/accountLinks", async (req, res) => {
 });
 
 app.post("/api/stripe/intentMobileApp", async (req, res) => {
-  const paymentIntent = await stripe.paymentIntents.create(
-    {
+  console.log(req.body);
+  const paymentIntent = await stripe.paymentIntents
+    .create({
       payment_method_types: ["card"],
       amount: req.body.amount,
       payment_method: req.body.payment_method,
       currency: "brl",
       application_fee_amount: Math.floor(req.body.amount * 0.2),
       description: req.body.description,
-      receipt_email: user_email,
-    },
-    {
-      stripeAccount: req.body.account_id,
-    }
-  );
-  // console.log(paymentIntent);s
+      receipt_email: req.body.user_email,
+      transfer_data: {
+        destination: req.body.account_id,
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send("ERROR");
+    });
+  console.log(paymentIntent);
   res.send(paymentIntent.client_secret);
 });
 
