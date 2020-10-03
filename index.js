@@ -75,25 +75,49 @@ app.post("/api/stripe/accountLinks", async (req, res) => {
 
 app.post("/api/stripe/intentMobileApp", async (req, res) => {
   console.log(req.body);
+  // const paymentMethod = await stripe.paymentMethods.create(
+  //   {
+  //     payment_method: req.body.payment_method,
+  //   },
+  //   {
+  //     stripeAccount: req.body.account_id,
+  //   }
+  // );
   const paymentIntent = await stripe.paymentIntents
-    .create({
-      payment_method_types: ["card"],
-      amount: req.body.amount,
-      payment_method: req.body.payment_method,
-      currency: "brl",
-      application_fee_amount: Math.floor(req.body.amount * 0.2),
-      description: req.body.description,
-      receipt_email: req.body.user_email,
-      transfer_data: {
-        destination: req.body.account_id,
-      },
-    })
+    .create(
+      {
+        payment_method_types: ["card"],
+        amount: req.body.amount,
+        // payment_method: paymentMethod.id,
+        payment_method: req.body.payment_method,
+        currency: "brl",
+        // application_fee_amount: Math.floor(req.body.amount * 0.2),
+        description: req.body.description,
+        receipt_email: req.body.user_email,
+        // confirmation_method: "automatic",
+        // confirm: true,
+        // transfer_data: {
+        //   destination: req.body.account_id,
+        // },
+      }
+      // {
+      //   stripeAccount: req.body.account_id,
+      // }
+    )
     .catch((err) => {
       console.log(err);
-      res.send("ERROR");
+      res.json({
+        err: err,
+        success: false,
+      });
     });
   console.log(paymentIntent);
-  res.send(paymentIntent.client_secret);
+  res.json({
+    paymentIntent: paymentIntent.client_secret,
+    // paymentMethod: paymentMethod.id,
+    // paymentMethod: req.body.payment_method,
+    success: true,
+  });
 });
 
 app.post("/api/stripe_intent", async (req, res) => {
