@@ -10,7 +10,7 @@ mercadopago.configure({
   access_token:
     "TEST-1456055079143308-090812-0686399f726749634bc15b7a4b2e2388-233894286",
 });
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -22,6 +22,63 @@ app.use(require("body-parser").json());
 
 app.get("/", async (req, res) => {
   res.send("welcome");
+});
+
+app.post("/api/stripe/createAccount", async (req, res) => {
+  const account = await stripe.accounts.create({
+    type: "standard",
+    email: req.body.email,
+  });
+  // console.log(account.id);
+  res.send(account.id);
+});
+
+app.post("/api/stripe/retrieveAccount", async (req, res) => {
+  // console.log(req.body.account_id);
+  if (req.body.account_id) {
+    const account = await stripe.accounts.retrieve(req.body.account_id);
+    // console.log(account);
+    account.success = true;
+    res.json(account);
+  } else {
+    res.json({ msg: "account_id is undefined", success: false });
+  }
+});
+
+app.post("/api/stripe/accountLinks", async (req, res) => {
+  // console.log(req.body.account_id);
+  const accountLinks = await stripe.accountLinks
+    .create({
+      account: req.body.account_id,
+      refresh_url: "https://doutorferidasconecta.app.br/",
+      return_url: "https://doutorferidasconecta.app.br/",
+      type: "account_onboarding",
+    })
+    .catch((err) => {
+      // console.log(err);
+      res.json(err);
+    });
+  // console.log(accountLinks);
+  res.json(accountLinks);
+});
+
+app.post("/api/stripe/intentMobileApp", async (req, res) => {
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      payment_method_types: ["card"],
+      amount: req.body.amount,
+      payment_method: req.body.payment_method,
+      currency: "brl",
+      application_fee_amount: Math.floor(req.body.amount * 0.2),
+      description: req.body.description,
+      receipt_email: user_email,
+    },
+    {
+      stripeAccount: req.body.account_id,
+    }
+  );
+  // console.log(paymentIntent);s
+  res.send(paymentIntent.client_secret);
 });
 
 app.post("/api/stripe_intent", async (req, res) => {
@@ -82,6 +139,7 @@ app.post("/api/get_preference", async (req, res) => {
 });
 
 app.post("/api/process_payment", (req, res) => {
+  // console.log(req.body);
   var payment_data = {
     transaction_amount: parseInt(req.body.transactionAmount),
     token: req.body.token,
