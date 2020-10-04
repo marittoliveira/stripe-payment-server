@@ -111,11 +111,20 @@ app.post("/api/stripe/intentMobileApp", async (req, res) => {
         success: false,
       });
     });
+
   // console.log(paymentIntent);
-  res.json({
-    paymentIntent: paymentIntent.id,
-    success: true,
-  });
+  if (paymentIntent.status == "succeeded") {
+    res.json({
+      paymentIntent: paymentIntent.id,
+      success: true,
+    });
+  } else {
+    res.json({
+      paymentIntent: paymentIntent.id,
+      status: paymentIntent.status,
+      success: false,
+    });
+  }
 });
 
 app.post("/api/stripe_intent", async (req, res) => {
