@@ -1,7 +1,7 @@
 const app = require("express")();
 var mercadopago = require("mercadopago");
 const stripe = require("stripe")(
-  "sk_test_51HWJxcDi4j44abnrvCXr1VJTKodVD4QHUKryifHNBuogXE9kP6LV30fV6ECh9dTzULh4gtkJspfVki4y74vUIgdE00QwC7nfcg"
+  "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"
 );
 
 var port = process.env.PORT || 9000;
