@@ -1,17 +1,142 @@
 /*const app = require("express")();
 var mercadopago = require("mercadopago");
+const stripe = require("stripe")(
+  "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"
+);
+
 var port = process.env.PORT || 9000;
 
 mercadopago.configure({
   access_token:
-    "TEST-1456055079143308-051916-8ad472fa5fd87ef418bdc7c48d9614f0-233894286",
+    "TEST-1456055079143308-090812-0686399f726749634bc15b7a4b2e2388-233894286",
 });
-
-// app.use(require("body-parser").text());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.use(require("body-parser").json());
 
 app.get("/", async (req, res) => {
   res.send("welcome");
+});
+
+app.post("/api/stripe/createAccount", async (req, res) => {
+  const account = await stripe.accounts.create({
+    type: "standard",
+    email: req.body.email,
+  });
+  // console.log(account.id);
+  res.send(account.id);
+});
+
+app.post("/api/stripe/deleteAccount", async (req, res) => {
+  console.log(req.body.account_id);
+  const deleted = await stripe.accounts
+    .del(req.body.account_id)
+    .catch((err) => {
+      console.log(err);
+    });
+  console.log(deleted);
+  res.send("success");
+});
+
+app.post("/api/stripe/retrieveAccount", async (req, res) => {
+  // console.log(req.body.account_id);
+  if (req.body.account_id) {
+    const account = await stripe.accounts.retrieve(req.body.account_id);
+    // console.log(account);
+    account.success = true;
+    res.json(account);
+  } else {
+    res.json({ msg: "account_id is undefined", success: false });
+  }
+});
+
+app.post("/api/stripe/accountLinks", async (req, res) => {
+  // console.log(req.body.account_id);
+  const accountLinks = await stripe.accountLinks
+    .create({
+      account: req.body.account_id,
+      refresh_url: "https://doutorferidasconecta.app.br/",
+      return_url: "https://doutorferidasconecta.app.br/",
+      type: "account_onboarding",
+    })
+    .catch((err) => {
+      // console.log(err);
+      res.json(err);
+    });
+  // console.log(accountLinks);
+  res.json(accountLinks);
+});
+
+app.post("/api/stripe/intentMobileApp", async (req, res) => {
+  let clonedPaymentMethod = await stripe.paymentMethods
+    .create(
+      {
+        payment_method: req.body.payment_method,
+      },
+      {
+        stripeAccount: req.body.account_id,
+      }
+    )
+    .catch((err) => {
+      console.log(err);
+    });
+  console.log(clonedPaymentMethod);
+  const paymentIntent = await stripe.paymentIntents
+    .create(
+      {
+        payment_method_types: ["card"],
+        amount: req.body.amount,
+        // payment_method: req.body.payment_method,
+        payment_method: clonedPaymentMethod.id,
+        currency: "brl",
+        description: req.body.description,
+        receipt_email: req.body.user_email,
+        application_fee_amount: Math.floor(req.body.amount * 0.2),
+        confirm: true,
+      },
+      {
+        stripeAccount: req.body.account_id,
+      }
+    )
+    .catch((err) => {
+      console.log(err);
+      res.json({
+        err: err,
+        success: false,
+      });
+    });
+
+  // console.log(paymentIntent);
+  if (paymentIntent.status == "succeeded") {
+    res.json({
+      paymentIntent: paymentIntent.id,
+      success: true,
+    });
+  } else {
+    res.json({
+      paymentIntent: paymentIntent.id,
+      status: paymentIntent.status,
+      success: false,
+    });
+  }
+});
+
+app.post("/api/stripe_intent", async (req, res) => {
+  // console.log(typeof req.body.amount);
+  const intent = await stripe.paymentIntents.create({
+    amount: req.body.amount,
+    currency: "brl",
+    payment_method_types: ["card"],
+    payment_method: req.body.payment_method,
+  });
+  // console.log(intent.client_secret);
+  res.send(intent.client_secret);
 });
 
 app.post("/api/get_preference", async (req, res) => {
@@ -175,5 +300,37 @@ app.post("/api/process_payment", (req, res) => {
 });
 
 app.listen(port, () => console.log("Listening " + port));
+
+app.post("/api/process_payment", (req, res) => {
+  // console.log(req.body);
+  var payment_data = {
+    transaction_amount: parseInt(req.body.transactionAmount),
+    token: req.body.token,
+    description: req.body.description,
+    installments: parseInt(req.body.installments),
+    payment_method_id: req.body.paymentMethodId,
+    issuer_id: undefined,
+    payer: {
+      email: req.body.email,
+    },
+  };
+  try {
+    mercadopago.payment
+      .save(payment_data)
+      .then(function (response) {
+        res.status(response.status).json({
+          status: response.body.status,
+          status_detail: response.body.status_detail,
+          id: response.body.id,
+        });
+      })
+      .catch((error) => {
+        console.log("error Found : ", error);
+      });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err);
+  }
+});
 
 app.listen(port, () => console.log("Listening " + port));
