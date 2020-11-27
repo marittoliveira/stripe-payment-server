@@ -186,6 +186,8 @@ app.post("/api/get_preference", async (req, res) => {
 const cors = require('cors');
 const app = require("express")();
 var mercadopago = require("mercadopago");
+const bodyParser = require("body-parser");
+const stripe = require("stripe")('sk_test_51HWJxcDi4j44abnrvCXr1VJTKodVD4QHUKryifHNBuogXE9kP6LV30fV6ECh9dTzULh4gtkJspfVki4y74vUIgdE00QwC7nfcg');
 
 var port = process.env.PORT || 9000;
 
@@ -201,9 +203,9 @@ app.use(function (req, res, next) {
   );
   next();
 });
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cors());
-app.use(require("body-parser").json());
-
 app.get("/", async (req, res) => {
   res.send("welcome");
 });
