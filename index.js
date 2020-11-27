@@ -301,7 +301,6 @@ app.post("/api/process_payment", (req, res) => {
   }
 });
 
-app.listen(port, () => console.log("Listening " + port));
 
 app.post("/api/process_payment", (req, res) => {
   // console.log(req.body);
