@@ -183,6 +183,7 @@ app.post("/api/get_preference", async (req, res) => {
     res.status(500).end();
   }
 });*/
+const cors = require('cors');
 const app = require("express")();
 var mercadopago = require("mercadopago");
 
@@ -200,6 +201,7 @@ app.use(function (req, res, next) {
   );
   next();
 });
+app.use(cors());
 app.use(require("body-parser").json());
 
 app.get("/", async (req, res) => {
