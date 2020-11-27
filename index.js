@@ -187,7 +187,7 @@ const cors = require('cors');
 const app = require("express")();
 var mercadopago = require("mercadopago");
 const bodyParser = require("body-parser");
-const stripe = require("stripe")('sk_test_51HWJxcDi4j44abnrvCXr1VJTKodVD4QHUKryifHNBuogXE9kP6LV30fV6ECh9dTzULh4gtkJspfVki4y74vUIgdE00QwC7nfcg');
+const stripe = require("stripe")('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');
 
 var port = process.env.PORT || 9000;
 
