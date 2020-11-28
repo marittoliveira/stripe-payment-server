@@ -1,7 +1,7 @@
 const app = require('express')();
 var mercadopago = require('mercadopago');
 const stripe = require('stripe')(
-  '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'
+  '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'
 );
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -50,7 +50,7 @@ app.post('/api/stripe/retrieveAccount', async (req, res) => {
   // console.log(req.body.account_id);
   if (req.body.account_id) {
     const account = await stripe.accounts.retrieve(req.body.account_id);
-    // console.log(account);
+    console.log(account);
     account.success = true;
     res.json(account);
   } else {
