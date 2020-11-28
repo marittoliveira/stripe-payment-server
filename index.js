@@ -230,8 +230,18 @@ app.post('/api/sub', async (req, res) => {
   
   const status = subscription['latest_invoice']['payment_intent']['status'] 
   const client_secret = subscription['latest_invoice']['payment_intent']['client_secret']
-
-  res.json({'client_secret': client_secret, 'status': status});
+  
+  res.json({'client_secret': client_secret, 'status': status, subscriptionID: subscription.id});
+})
+app.delete('/api/sub', async (req, res) => {
+  const {subscriptionID} = req.body;
+  if (!subscriptionID) {
+    return res.status(500).json({message: 'Subscription Was Not Passed!'});
+  }
+  const deleted = await stripe.subscriptions.del(
+    subscriptionID
+  );
+  return res.status(200).json({message: 'Subscription cancelled'});
 })
 
 app.post("/api/get_preference", async (req, res) => {
