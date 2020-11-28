@@ -1,7 +1,7 @@
 const app = require('express')();
 var mercadopago = require('mercadopago');
 const stripe = require('stripe')(
-  'sk_test_51HWJxcDi4j44abnrvCXr1VJTKodVD4QHUKryifHNBuogXE9kP6LV30fV6ECh9dTzULh4gtkJspfVki4y74vUIgdE00QwC7nfcg'
+  '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'
 );
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -23,8 +23,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", async (req, res) => {
-  res.send("welcome");
+app.get('/', async (req, res) => {
+  res.send('welcome');
 });
 app.post('/api/stripe/createAccount', async (req, res) => {
   const account = await stripe.accounts.create({
@@ -218,9 +218,8 @@ app.post('/api/process_payment', (req, res) => {
   }
 });
 
-
 app.post('/api/sub', async (req, res) => {
-  const {email, payment_method, price} = req.body;
+  const { email, payment_method, price } = req.body;
 
   const customer = await stripe.customers.create({
     payment_method: payment_method,
@@ -232,25 +231,28 @@ app.post('/api/sub', async (req, res) => {
 
   const subscription = await stripe.subscriptions.create({
     customer: customer.id,
-    
+
     items: [{ price }],
-    expand: ['latest_invoice.payment_intent']
+    expand: ['latest_invoice.payment_intent'],
   });
-  
-  const status = subscription['latest_invoice']['payment_intent']['status'] 
-  const client_secret = subscription['latest_invoice']['payment_intent']['client_secret']
-  
-  res.json({'client_secret': client_secret, 'status': status, subscriptionID: subscription.id});
-})
+
+  const status = subscription['latest_invoice']['payment_intent']['status'];
+  const client_secret =
+    subscription['latest_invoice']['payment_intent']['client_secret'];
+
+  res.json({
+    client_secret: client_secret,
+    status: status,
+    subscriptionID: subscription.id,
+  });
+});
 app.delete('/api/sub', async (req, res) => {
-  const {subscriptionID} = req.body;
+  const { subscriptionID } = req.body;
   if (!subscriptionID) {
-    return res.status(500).json({message: 'Subscription Was Not Passed!'});
+    return res.status(500).json({ message: 'Subscription Was Not Passed!' });
   }
-  const deleted = await stripe.subscriptions.del(
-    subscriptionID
-  );
-  return res.status(200).json({message: 'Subscription cancelled'});
-})
+  const deleted = await stripe.subscriptions.del(subscriptionID);
+  return res.status(200).json({ message: 'Subscription cancelled' });
+});
 
 app.listen(port, () => console.log('Listening ' + port));
