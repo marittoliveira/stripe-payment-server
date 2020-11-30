@@ -257,6 +257,7 @@ app.post('/api/sub/delete', async (req, res) => {
     const deleted = await stripe.subscriptions.del(subscriptionID);
     return res.status(200).json({ message: 'Subscription cancelled' });
   } catch (e) {
+    console.log(e);
     return res.status(500).json({ message: 'Internal Server Error!' });
 
   }
