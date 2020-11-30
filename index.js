@@ -247,7 +247,7 @@ app.post('/api/sub', async (req, res) => {
     subscriptionID: subscription.id,
   });
 });
-app.delete('/api/sub', async (req, res) => {
+app.post('/api/sub/delete', async (req, res) => {
   const { subscriptionID } = req.body;
   console.log(req.body);
   if (!subscriptionID) {
