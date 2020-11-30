@@ -3,6 +3,7 @@ var mercadopago = require('mercadopago');
 const stripe = require('stripe')(
   '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'
 );
+
 const cors = require('cors');
 const bodyParser = require('body-parser');
 var port = process.env.PORT || 9000;
