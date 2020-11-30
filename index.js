@@ -249,6 +249,7 @@ app.post('/api/sub', async (req, res) => {
 });
 app.delete('/api/sub', async (req, res) => {
   const { subscriptionID } = req.body;
+  console.log(req.body);
   if (!subscriptionID) {
     return res.status(500).json({ message: 'Subscription Was Not Passed!' });
   }
