@@ -252,8 +252,14 @@ app.delete('/api/sub', async (req, res) => {
   if (!subscriptionID) {
     return res.status(500).json({ message: 'Subscription Was Not Passed!' });
   }
-  const deleted = await stripe.subscriptions.del(subscriptionID);
-  return res.status(200).json({ message: 'Subscription cancelled' });
+  try {
+    const deleted = await stripe.subscriptions.del(subscriptionID);
+    return res.status(200).json({ message: 'Subscription cancelled' });
+  } catch (e) {
+    return res.status(500).json({ message: 'Internal Server Error!' });
+
+  }
+  
 });
 
 app.listen(port, () => console.log('Listening ' + port));
