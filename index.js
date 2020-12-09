@@ -1,5 +1,4 @@
 const app = require('express')();
-var mercadopago = require('mercadopago');
 const stripe = require('stripe')(
   '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'
 );
@@ -11,10 +10,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-mercadopago.configure({
-  access_token:
-    'TEST-1456055079143308-090812-0686399f726749634bc15b7a4b2e2388-233894286',
-});
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -89,7 +84,14 @@ app.post('/api/stripe/intentMobileApp', async (req, res) => {
     .catch((err) => {
       console.log(err);
     });
-  console.log(clonedPaymentMethod);
+  // console.log(clonedPaymentMethod);
+  let percentage_split = req.body.percentage_split;
+  if (percentage_split) {
+    percentage_split = percentage_split / 100;
+  } else {
+    // defalut percentage_split is 20%
+    percentage_split = 0.2;
+  }
   const paymentIntent = await stripe.paymentIntents
     .create(
       {
@@ -100,7 +102,7 @@ app.post('/api/stripe/intentMobileApp', async (req, res) => {
         currency: 'brl',
         description: req.body.description,
         receipt_email: req.body.user_email,
-        application_fee_amount: Math.floor(req.body.amount * 0.2),
+        application_fee_amount: Math.floor(req.body.amount * percentage_split),
         confirm: true,
       },
       {
@@ -140,83 +142,6 @@ app.post('/api/stripe_intent', async (req, res) => {
   });
   // console.log(intent.client_secret);
   res.send(intent.client_secret);
-});
-
-app.post('/api/get_preference', async (req, res) => {
-  var obj = req.body;
-  // console.log(obj);
-
-  try {
-    var preference = {};
-
-    var item = {
-      title: obj.title,
-      quantity: 1,
-      currency_id: 'BRL',
-      unit_price: obj.service_value,
-    };
-
-    var payer = {
-      email: obj.email,
-      name: obj.name,
-      date_created: new Date().toISOString(),
-    };
-
-    var payment_methods = {
-      excluded_payment_types: [{ id: 'ticket' }, { id: 'atm' }],
-    };
-
-    preference.items = [item];
-    preference.payer = payer;
-    preference.payment_methods = payment_methods;
-
-    mercadopago.preferences
-      .create(preference)
-      .then((data) => {
-        // console.log(data);
-        let r = { status: 200, id: data.body.id };
-        res.json(r);
-      })
-      .catch((error) => {
-        let r = { status: 500 };
-        res.json({ r });
-      });
-  } catch (err) {
-    let r = { status: 500 };
-    res.status(500).end();
-  }
-});
-
-app.post('/api/process_payment', (req, res) => {
-  // console.log(req.body);
-  var payment_data = {
-    transaction_amount: parseInt(req.body.transactionAmount),
-    token: req.body.token,
-    description: req.body.description,
-    installments: parseInt(req.body.installments),
-    payment_method_id: req.body.paymentMethodId,
-    issuer_id: undefined,
-    payer: {
-      email: req.body.email,
-    },
-  };
-  try {
-    mercadopago.payment
-      .save(payment_data)
-      .then(function (response) {
-        res.status(response.status).json({
-          status: response.body.status,
-          status_detail: response.body.status_detail,
-          id: response.body.id,
-        });
-      })
-      .catch((error) => {
-        console.log('error Found : ', error);
-      });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
 });
 
 app.post('/api/sub', async (req, res) => {
@@ -259,9 +184,7 @@ app.post('/api/sub/delete', async (req, res) => {
   } catch (e) {
     console.log(e);
     return res.status(500).json({ message: 'Internal Server Error!' });
-
   }
-  
 });
 
 app.listen(port, () => console.log('Listening ' + port));
