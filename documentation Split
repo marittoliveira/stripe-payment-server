@@ -4,7 +4,7 @@ Test documentation for the payment split
 
 2.After having the account configured the file in src >components>pay.js will generate the card token to charge.
 
-3.All sellers must authorize through the link:https://auth.mercadopago.com.br/authorization?client_id=&response_type=code&platform_id=mp&redirect_uri=https://www.mercadopago.com/mp.php
+3.All sellers must authorize through the link:
 
 4.the file that will charge the user card and the payment server index.js
 

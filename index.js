@@ -1,6 +1,6 @@
 const app = require('express')();
 const stripe = require('stripe')(
-  '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'
+  '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'
 );
 
 const cors = require('cors');
@@ -59,8 +59,8 @@ app.post('/api/stripe/accountLinks', async (req, res) => {
   const accountLinks = await stripe.accountLinks
     .create({
       account: req.body.account_id,
-      refresh_url: 'https://doutorferidasconecta.app.br/',
-      return_url: 'https://doutorferidasconecta.app.br/',
+      refresh_url: 'https://',
+      return_url: 'https://',
       type: 'account_onboarding',
     })
     .catch((err) => {
